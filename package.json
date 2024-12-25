@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "node ./migrations/migrate.js migrate"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.1.4",
@@ -32,13 +33,17 @@
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "@types/react-slick": "^0.23.10",
+    "dotenv": "^16.4.7",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
     "framer-motion": "^10.12.16",
     "next": "13.1.6",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.13.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-slick": "^0.29.0",
+    "sql-migrations": "^1.0.7",
     "typescript": "4.9.5"
   }
 }

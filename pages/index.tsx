@@ -3,26 +3,28 @@ import {
   publicKey,
   Umi,
 } from "@metaplex-foundation/umi";
-import { DigitalAssetWithToken, JsonMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { DigitalAssetWithToken, JsonMetadata, fetchAllDigitalAssetWithTokenByOwner } from "@metaplex-foundation/mpl-token-metadata";
 import dynamic from "next/dynamic";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useUmi } from "../utils/useUmi";
 import { fetchCandyMachine, safeFetchCandyGuard, CandyGuard, CandyMachine, AccountVersion } from "@metaplex-foundation/mpl-candy-machine"
 import styles from "../styles/Home.module.css";
 import { guardChecker } from "../utils/checkAllowed";
-import { Center, Card, CardHeader, CardBody, StackDivider, Heading, Stack, useToast, Text, Skeleton, useDisclosure, Button, Modal, ModalBody, ModalCloseButton, ModalContent, Image, ModalHeader, ModalOverlay, Box, Divider, VStack, Flex } from '@chakra-ui/react';
+import { Center, Spinner, Card, CardHeader, CardBody, StackDivider, Heading, Stack, useToast, Text, Skeleton, useDisclosure, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, Image, ModalHeader, ModalOverlay, Box, Divider, VStack, HStack, Flex } from '@chakra-ui/react';
 import { ButtonList } from "../components/mintButton";
 import { GuardReturn } from "../utils/checkerHelper";
 import { ShowNft } from "../components/showNft";
 import { InitializeModal } from "../components/initializeModal";
 import { image, headerText } from "../settings";
 import { useSolanaTime } from "@/utils/SolanaTimeContext";
+import TokenAttributes from "@/utils/tokenAttributes";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
+
 
 const useCandyMachine = (
   umi: Umi,
@@ -111,8 +113,6 @@ const useCandyMachine = (
   }, [umi, checkEligibility]);
 
   return { candyMachine, candyGuard };
-
-
 };
 
 
@@ -126,12 +126,15 @@ export default function Home() {
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [ownedTokens, setOwnedTokens] = useState<DigitalAssetWithToken[]>();
+  const [ownedTokensAttributes, setOwnedTokensAttributes] = useState<TokenAttributes[]>();
   const [guards, setGuards] = useState<GuardReturn[]>([
     { label: "startDefault", allowed: false, maxAmount: 0 },
   ]);
   const [firstRun, setFirstRun] = useState(true);
   const [checkEligibility, setCheckEligibility] = useState<boolean>(true);
-
+  const [cardInfo, setCardInfo] = useState(null);
+  const { isOpen: isOpenModal, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
+  let modalInfo = null;
 
   if (!process.env.NEXT_PUBLIC_CANDY_MACHINE_ID) {
     console.error("No candy machine in .env!")
@@ -177,6 +180,39 @@ export default function Home() {
       );
 
       setOwnedTokens(ownedTokens);
+      if (ownedTokens != undefined) {
+        let tokenAttributes:TokenAttributes[] = [];
+        let nftsList:string[] = [];
+
+        //const response = await fetch('/api/book');
+        for(let i = 0; i < ownedTokens.length; i++) {
+          if (ownedTokens[i].metadata.symbol !== 'NUMBERS') { // todo: change to collections symbol
+            continue;
+          }
+          nftsList.push(ownedTokens[i].metadata.name);
+          /*const response = await fetch(ownedTokens[i].metadata.uri);
+          const data = await response.json();
+          data.attributes.forEach((nft: any) => {
+            if (nft.trait_type === 'Number') { // todo: uuid attr
+              tokenAttributes.push(new TokenAttributes(ownedTokens[i].publicKey.toString()));
+            }
+          });*/
+        }
+
+        const response = await fetch("/api/book", {
+          method: "POST",
+          body: JSON.stringify({ "nfts": nftsList }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        });
+        const data = await response.json();
+        data.catalog.forEach((nft: any) => {
+          tokenAttributes.push(new TokenAttributes(nft.id, nft.title,nft.id !== null, nft.number));
+        });
+
+        setOwnedTokensAttributes(tokenAttributes);
+      }
       setGuards(guardReturn);
       setIsAllowed(false);
 
@@ -197,6 +233,67 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [umi, checkEligibility, firstRun]);
 
+  const allNFTs = async () => {
+    let p = await fetchAllDigitalAssetWithTokenByOwner(
+        umi,
+        umi.identity.publicKey,
+    );
+
+    return [];
+  };
+
+  const CatalogContent = () => {
+    const handleCardClick = async (uuid: string|null) => {
+      if (uuid === null) {
+        return;
+      }
+
+      onOpenModal();
+
+      // Get an additional information
+      const response = await fetch("/api/card", {
+        method: "POST",
+        body: JSON.stringify({ "uuid": uuid }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
+      const data = await response.json();
+      if (response.status !== 200) {
+        setCardInfo(null);
+
+        return;
+      }
+
+      setCardInfo(data);
+    };
+
+    return (
+      <div>
+        <div className={styles.catalogList__title}>NFT cats</div>
+        {isAllowed ? (
+                  <section className={styles.catalogList}>
+                    {ownedTokensAttributes ?
+                        (ownedTokensAttributes.map((nft, index) => (
+                            <div key={`nft-${nft.getNumber()}`} className={styles.catalogList__item} onClick={() => handleCardClick(nft.getUuid())}>
+                              <p><strong>{nft.getTitle()}</strong></p>
+                              <p>Uuid: {nft.getUuid()}</p>
+                            </div>
+                        )))
+                        : ""
+                    }
+                  </section>
+        ) : (
+            <div>
+              <WalletMultiButtonDynamic />
+            </div>
+        )}
+
+        Hello {umi.identity.publicKey}
+      </div>
+    )
+  };
+
   const PageContent = () => {
     return (
       <>
@@ -208,19 +305,17 @@ export default function Home() {
    `}
         </style>
         <Card>
-          <CardHeader>
+          <CardHeader padding={"2"}>
             <Flex minWidth='max-content' alignItems='center' gap='2'>
               <Box>
                 <Heading size='md'>{headerText}</Heading>
               </Box>
               {loading ? (<></>) : (
                 <Flex justifyContent="flex-end" marginLeft="auto">
-                  <Box background={"teal.100"} borderRadius={"5px"} minWidth={"50px"} minHeight={"50px"} p={2} >
-                    <VStack >
-                      <Text fontSize={"sm"}>Available NFTs:</Text>
-                      <Text fontWeight={"semibold"}>{Number(candyMachine?.data.itemsAvailable) - Number(candyMachine?.itemsRedeemed)}/{Number(candyMachine?.data.itemsAvailable)}</Text>
-                    </VStack>
-                  </Box>
+                    <HStack gap='1'>
+                      <Text fontSize={"x-small"}>Total available NFT cards:</Text>
+                      <Text fontWeight={"semibold"} fontSize={"x-small"}>{Number(candyMachine?.data.itemsAvailable) - Number(candyMachine?.itemsRedeemed)}/{Number(candyMachine?.data.itemsAvailable)}</Text>
+                    </HStack>
                 </Flex>
               )}
             </Flex>
@@ -303,12 +398,58 @@ export default function Home() {
 
   return (
     <main>
-      <div className={styles.wallet}>
-        <WalletMultiButtonDynamic />
-      </div>
+      <Modal isOpen={isOpenModal} onClose={onCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {
+              cardInfo === null ?
+                  (<div>
+                    <VStack>
+                      <Spinner color="orange.600" />
+                      <Text color="orange.600">Loading...</Text>
+                    </VStack>
+                  </div>)
+                : (<div className={styles.photos}>
+                    {
+                      (cardInfo.images.map((imgObj, index) => (
+                          <div key={`img-${index}`} className={styles.photos__item}>
+                            <Image src={`data:image/jpeg;base64,${imgObj.base64}`}/>
+                          </div>
+                      )))
+                    }
+                    {
+                      cardInfo.videos[0] !== undefined ?
+                      (<video controls width="100%">
+                        <source src={cardInfo.videos[0].fileName} type="video/mp4"/>
+                      </video>)
+                          : (<div></div>)
+                    }
+                  </div>)
+            }
+          </ModalBody>
 
-      <div className={styles.center}>
-        <PageContent key="content" />
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={() => { setCardInfo(null); onCloseModal(); }}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <div className={styles.content}>
+        <div className={styles.catalog}>
+          <CatalogContent key="catalog" />
+        </div>
+        <div className={styles.purchase}>
+          <div className={styles.wallet}>
+            <WalletMultiButtonDynamic />
+          </div>
+          <div className={styles.center}>
+            <PageContent key="content" />
+          </div>
+        </div>
       </div>
     </main>
   );

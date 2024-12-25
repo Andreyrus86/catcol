@@ -126,3 +126,69 @@
 .success:hover code {
   color: rgb(var(--accent-rgb));
 }
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 100vh;
+}
+
+.catalog {
+  background-color: darkgreen;
+  flex: 2 1 30%;
+}
+
+.purchase {
+  flex: 1 1 30%;
+  max-width: 600px;
+}
+
+.catalogList {
+  display: flex;
+  width: 90%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  list-style-type: none;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 1em;
+}
+
+.catalogList__title {
+  font-size: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.catalogList__item {
+  max-width: 200px;
+  flex: 1 1 30%;
+}
+
+.catalogList__item:hover {
+  box-shadow: 0 0 20px 5px rgba(255, 165, 0, 0.7);
+  cursor: pointer;
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.photos__item {
+  flex: 0 0 100%;
+}
+
+@media screen and (max-width: 1081px) {
+  .purchase {
+    order: 1;
+  }
+
+  .catalog {
+    order: 2;
+  }
+}
