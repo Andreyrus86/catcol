@@ -37,6 +37,7 @@
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
     "framer-motion": "^10.12.16",
+    "fs.promises.exists": "^1.1.4",
     "next": "13.1.6",
     "node-fetch": "^3.3.2",
     "pg": "^8.13.1",

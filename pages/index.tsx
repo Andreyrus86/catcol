@@ -421,9 +421,9 @@ export default function Home() {
                       )))
                     }
                     {
-                      cardInfo.videos[0] !== undefined ?
+                      cardInfo.video != false ?
                       (<video controls width="100%">
-                        <source src={cardInfo.videos[0].fileName} type="video/mp4"/>
+                        <source src={`/api/video?id=${cardInfo.video}`} type="video/mp4"/>
                       </video>)
                           : (<div></div>)
                     }

@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         const videoFiles = await fs.readdir(videosFolderPath);
 
         const imageFiles = files.filter(file => /\.(jpg|jpeg|png)$/i.test(file));
-        const videoFilesFiltered = videoFiles.filter(file => /\.(mp4|avi|mkv)$/i.test(file));
+        const videoFilesFiltered = videoFiles.filter(file => /\.(mp4)$/i.test(file));
 
         if (imageFiles.length === 0) {
             res.status(200).json(null);
@@ -36,16 +36,10 @@ export default async function handler(req, res) {
             })
         );
 
-        const videosBase64 = await Promise.all(
-            videoFilesFiltered.map(async file => {
-                return {
-                    fileName: path.join('media', 'book_1', req.body.uuid, 'videos', file),
-                };
-            })
-        );
+        const videoFileExist = videoFilesFiltered.length > 0 ? req.body.uuid : false;
 
         //await new Promise(resolve => setTimeout(resolve, 5000));
-        res.status(200).json({ images: imagesBase64, videos: videosBase64 });
+        res.status(200).json({ images: imagesBase64, video: videoFileExist });
     } catch (error) {
         res.status(500).json({ error: 'Failed to process images' });
     }

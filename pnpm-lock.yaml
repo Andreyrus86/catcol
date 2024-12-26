@@ -89,6 +89,9 @@ importers:
       framer-motion:
         specifier: ^10.12.16
         version: 10.12.16(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      fs.promises.exists:
+        specifier: ^1.1.4
+        version: 1.1.4
       next:
         specifier: 13.1.6
         version: 13.1.6(@babel/core@7.23.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -3852,6 +3855,9 @@ packages:
   fs-extra@8.1.0:
     resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
     engines: {node: '>=6 <7 || >=8'}
+
+  fs.promises.exists@1.1.4:
+    resolution: {integrity: sha512-lJzUGWbZn8vhGWBedA+RYjB/BeJ+3458ljUfmplqhIeb6ewzTFWNPCR1HCiYCkXV9zxcHz9zXkJzMsEgDLzh3Q==}
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
@@ -11409,6 +11415,8 @@ snapshots:
       graceful-fs: 4.2.11
       jsonfile: 4.0.0
       universalify: 0.1.2
+
+  fs.promises.exists@1.1.4: {}
 
   fs.realpath@1.0.0: {}
 
