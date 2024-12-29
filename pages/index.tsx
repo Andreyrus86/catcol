@@ -18,6 +18,7 @@ import { InitializeModal } from "../components/initializeModal";
 import { image, headerText } from "../settings";
 import { useSolanaTime } from "@/utils/SolanaTimeContext";
 import TokenAttributes from "@/utils/tokenAttributes";
+import {default as NextJSImage} from 'next/image';
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -271,25 +272,35 @@ export default function Home() {
     return (
       <div>
         <div className={styles.catalogList__title}>NFT cats</div>
+        <div className={styles.catalogList__description}>
+          On this page, you can view your collection of NFT cards. Connect your Solana wallet to access the catalog.
+          If you are not sure whether an NFT card is right for you, we would appreciate any regular <a href="" className={styles.catalogList__link}>donation</a>. Iam sure that the future is totally related to blockchain and crypto technology, try it.
+        </div>
         {isAllowed ? (
                   <section className={styles.catalogList}>
                     {ownedTokensAttributes ?
                         (ownedTokensAttributes.map((nft, index) => (
-                            <div key={`nft-${nft.getNumber()}`} className={styles.catalogList__item} onClick={() => handleCardClick(nft.getUuid())}>
-                              <p><strong>{nft.getTitle()}</strong></p>
-                              <p>Uuid: {nft.getUuid()}</p>
+                            <div key={`nft-${nft.getNumber()}`} className={styles.catalogList__item}>
+                              {nft.isOwned() ? (
+                                  <div className={styles.emptyCard__cont}>
+                                    <p><strong>{nft.getTitle()}</strong></p>
+                                    <img src={'/card_preview.png'} className={styles.catalogList__card} onClick={() => handleCardClick(nft.getUuid())} />
+                                  </div>
+                              ) : (<div className={styles.emptyCard__cont}>
+                                <p>-</p>
+                                <div className={styles.emptyCard}></div>
+                              </div>)
+                              }
                             </div>
                         )))
                         : ""
                     }
                   </section>
         ) : (
-            <div>
+            <div className={styles.catalogList__empty}>
               <WalletMultiButtonDynamic />
             </div>
         )}
-
-        Hello {umi.identity.publicKey}
       </div>
     )
   };
@@ -307,13 +318,10 @@ export default function Home() {
         <Card>
           <CardHeader padding={"2"}>
             <Flex minWidth='max-content' alignItems='center' gap='2'>
-              <Box>
-                <Heading size='md'>{headerText}</Heading>
-              </Box>
               {loading ? (<></>) : (
-                <Flex justifyContent="flex-end" marginLeft="auto">
+                <Flex justifyContent="flex-start" alignItems={"center"}>
                     <HStack gap='1'>
-                      <Text fontSize={"x-small"}>Total available NFT cards:</Text>
+                      <Text fontSize={"x-small"} >Total available NFT cards:</Text>
                       <Text fontWeight={"semibold"} fontSize={"x-small"}>{Number(candyMachine?.data.itemsAvailable) - Number(candyMachine?.itemsRedeemed)}/{Number(candyMachine?.data.itemsAvailable)}</Text>
                     </HStack>
                 </Flex>
@@ -325,13 +333,12 @@ export default function Home() {
             <Center>
               <Box
                 rounded={'lg'}
-                mt={-12}
                 pos={'relative'}>
                 <Image
                   rounded={'lg'}
-                  height={230}
+                  height={306}
                   objectFit={'cover'}
-                  alt={"project Image"}
+                  alt={"cats NFT booster"}
                   src={image}
                 />
               </Box>
@@ -401,7 +408,7 @@ export default function Home() {
       <Modal isOpen={isOpenModal} onClose={onCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Detail info</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {
@@ -414,7 +421,11 @@ export default function Home() {
                   </div>)
                 : (<div className={styles.photos}>
                     {
-                      (cardInfo.images.map((imgObj, index) => (
+                      (<Image src={`data:image/png;base64,${cardInfo.card}`}/>)
+                    }
+                    {
+                      (
+                          cardInfo.images.map((imgObj, index) => (
                           <div key={`img-${index}`} className={styles.photos__item}>
                             <Image src={`data:image/jpeg;base64,${imgObj.base64}`}/>
                           </div>

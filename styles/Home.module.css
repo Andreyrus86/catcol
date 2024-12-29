@@ -1,6 +1,8 @@
-.wallet { 
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+.wallet {
   display: flex;
-  padding: 3rem;
+  padding: 3rem 3rem 1rem 3rem;
   flex-direction: row-reverse;
 }
 
@@ -135,7 +137,7 @@
 }
 
 .catalog {
-  background-color: darkgreen;
+  background-color: #FCC737;
   flex: 2 1 30%;
 }
 
@@ -153,14 +155,40 @@
   margin-left: auto;
   margin-right: auto;
   gap: 1em;
+  padding: 2rem 0rem 1rem 0rem;
+}
+
+.catalogList__empty {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.catalogList__empty .wallet-adapter-button {
+
 }
 
 .catalogList__title {
-  font-size: 2rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(46px, 3.594vw, 118px);
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 2rem;
   text-align: center;
+  font-weight: 700;
+  color: #7E1891;
+}
+
+.catalogList__description {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.catalogList__link {
+  color: #255DCC;
+  text-decoration: underline;
 }
 
 .catalogList__item {
@@ -168,8 +196,21 @@
   flex: 1 1 30%;
 }
 
-.catalogList__item:hover {
-  box-shadow: 0 0 20px 5px rgba(255, 165, 0, 0.7);
+.emptyCard__cont {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalogList__card {
+
+}
+
+.catalogList__card:hover {
+  display: block;
+  transition: all 0.1s ease-in-out;
+  transform: translate(-4px, -4px);
+  box-shadow: 6px 6px 6px 6px rgba(27, 24, 51, .5);
   cursor: pointer;
 }
 
@@ -181,6 +222,11 @@
 
 .photos__item {
   flex: 0 0 100%;
+}
+
+.emptyCard {
+  border: 1px solid gray;
+  height: 100%;
 }
 
 @media screen and (max-width: 1081px) {

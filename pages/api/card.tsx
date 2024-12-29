@@ -36,10 +36,14 @@ export default async function handler(req, res) {
             })
         );
 
+        const cardFilePath = path.join(process.cwd(), 'media', 'book_1', req.body.uuid, 'card.png');
+        const fileData = await fs.readFile(cardFilePath);
+        const cardFileBase64 = fileData.toString('base64');
+
         const videoFileExist = videoFilesFiltered.length > 0 ? req.body.uuid : false;
 
         //await new Promise(resolve => setTimeout(resolve, 5000));
-        res.status(200).json({ images: imagesBase64, video: videoFileExist });
+        res.status(200).json({ card: cardFileBase64, images: imagesBase64, video: videoFileExist });
     } catch (error) {
         res.status(500).json({ error: 'Failed to process images' });
     }
