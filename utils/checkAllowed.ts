@@ -44,6 +44,51 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import { checkAtaValid } from "./validateConfig";
 
+export const guardCheckerCatalog = async (
+    umi: Umi,
+    candyGuard: CandyGuard,
+    candyMachine: CandyMachine,
+    solanaTime: bigint
+) => {
+  let guardReturn: GuardReturn[] = [];
+  let ownedTokens: DigitalAssetWithToken[] = [];
+  if (!candyGuard) {
+    if (guardReturn.length === 0) {
+      //guardReturn.push({ label: "default", allowed: false });
+    }
+    return { guardReturnCatalog: guardReturn, ownedTokensCatalog: ownedTokens };
+  }
+
+  let guardsToCheck: { label: string; guards: GuardSet }[] = candyGuard.groups;
+  guardsToCheck.push({label: "default", guards: candyGuard.guards});
+
+  //no wallet connected. return dummies
+  const dummyPublicKey = publicKey("11111111111111111111111111111111");
+
+  if (
+      umi.identity.publicKey === dummyPublicKey
+  ) {
+    for (const eachGuard of guardsToCheck) {
+      guardReturn.push({
+        label: eachGuard.label,
+        allowed: false,
+        reason: "Please connect your wallet to mint",
+        maxAmount: 0
+      });
+    }
+    return { guardReturnCatalog: guardReturn, ownedTokensCatalog: ownedTokens };
+  }
+
+  if (checkTokensRequired(guardsToCheck)) {
+    ownedTokens = await fetchAllDigitalAssetWithTokenByOwner(
+        umi,
+        umi.identity.publicKey
+    );
+  }
+
+  return { guardReturnCatalog: guardReturn, ownedTokensCatalog: ownedTokens };
+};
+
 export const guardChecker = async (
   umi: Umi,
   candyGuard: CandyGuard,
@@ -64,6 +109,7 @@ export const guardChecker = async (
 
   //no wallet connected. return dummies
   const dummyPublicKey = publicKey("11111111111111111111111111111111");
+
   if (
     umi.identity.publicKey === dummyPublicKey ||
     Number(candyMachine.data.itemsAvailable) - Number(candyMachine.itemsRedeemed) === 0
@@ -82,7 +128,6 @@ export const guardChecker = async (
   if (candyMachine.authority === umi.identity.publicKey){
     checkAtaValid(umi, guardsToCheck);
   }
-
 
   let solBalance: SolAmount = sol(0);
   if (checkSolBalanceRequired(guardsToCheck)) {

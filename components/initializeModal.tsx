@@ -285,10 +285,6 @@ export const InitializeModal = ({ umi, candyMachine, candyGuard }: Props) => {
           </Button>
           <Text>Required for some guards</Text>
         </HStack>
-        <HStack>
-          <BuyABeerInput value={amount} setValue={setAmount} />
-          <Button onClick={buyABeer(umi, amount)}>Buy me a Beer 🍻</Button>
-        </HStack>
         {rootElements.length > 0 && (
           <Text fontWeight={"bold"}>Merkle trees for your allowlist.tsx:</Text>
         )}

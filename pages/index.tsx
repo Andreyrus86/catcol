@@ -9,7 +9,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useUmi } from "../utils/useUmi";
 import { fetchCandyMachine, safeFetchCandyGuard, CandyGuard, CandyMachine, AccountVersion } from "@metaplex-foundation/mpl-candy-machine"
 import styles from "../styles/Home.module.css";
-import { guardChecker } from "../utils/checkAllowed";
+import {guardChecker, guardCheckerCatalog} from "../utils/checkAllowed";
 import { Center, Spinner, Card, CardHeader, CardBody, StackDivider, Heading, Stack, useToast, Text, Skeleton, useDisclosure, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, Image, ModalHeader, ModalOverlay, Box, Divider, VStack, HStack, Flex } from '@chakra-ui/react';
 import { ButtonList } from "../components/mintButton";
 import { GuardReturn } from "../utils/checkerHelper";
@@ -171,6 +171,7 @@ export default function Home() {
 
   useEffect(() => {
     const checkEligibilityFunc = async () => {
+      //console.log(candyMachine, candyGuard, checkEligibility, isShowNftOpen);
       if (!candyMachine || !candyGuard || !checkEligibility || isShowNftOpen) {
         return;
       }
@@ -180,17 +181,33 @@ export default function Home() {
         umi, candyGuard, candyMachine, solanaTime
       );
 
+      const { guardReturnCatalog, ownedTokensCatalog } = await guardCheckerCatalog(
+          umi, candyGuard, candyMachine, solanaTime
+      );
+
       setOwnedTokens(ownedTokens);
-      if (ownedTokens != undefined) {
+      setGuards(guardReturn);
+      setIsAllowed(false);
+
+      let allowed = false;
+      for (const guard of guardReturn) {
+        if (guard.allowed) {
+          allowed = true;
+          break;
+        }
+      }
+
+      setIsAllowed(allowed);
+      if (ownedTokensCatalog != undefined) {
         let tokenAttributes:TokenAttributes[] = [];
         let nftsList:string[] = [];
 
         //const response = await fetch('/api/book');
-        for(let i = 0; i < ownedTokens.length; i++) {
-          if (ownedTokens[i].metadata.symbol !== 'NUMBERS') { // todo: change to collections symbol
+        for(let i = 0; i < ownedTokensCatalog.length; i++) {
+          if (ownedTokensCatalog[i].metadata.symbol !== 'NFTCATS') {
             continue;
           }
-          nftsList.push(ownedTokens[i].metadata.name);
+          nftsList.push(ownedTokensCatalog[i].metadata.name);
           /*const response = await fetch(ownedTokens[i].metadata.uri);
           const data = await response.json();
           data.attributes.forEach((nft: any) => {
@@ -213,19 +230,11 @@ export default function Home() {
         });
 
         setOwnedTokensAttributes(tokenAttributes);
-      }
-      setGuards(guardReturn);
-      setIsAllowed(false);
-
-      let allowed = false;
-      for (const guard of guardReturn) {
-        if (guard.allowed) {
-          allowed = true;
-          break;
+        if (nftsList.length) {
+          setIsAllowed(true);
         }
       }
 
-      setIsAllowed(allowed);
       setLoading(false);
     };
 
@@ -321,7 +330,7 @@ export default function Home() {
               {loading ? (<></>) : (
                 <Flex justifyContent="flex-start" alignItems={"center"}>
                     <HStack gap='1'>
-                      <Text fontSize={"x-small"} >Total available NFT cards:</Text>
+                      <Text fontSize={"x-small"} >Total available NFT cards left:</Text>
                       <Text fontWeight={"semibold"} fontSize={"x-small"}>{Number(candyMachine?.data.itemsAvailable) - Number(candyMachine?.itemsRedeemed)}/{Number(candyMachine?.data.itemsAvailable)}</Text>
                     </HStack>
                 </Flex>
