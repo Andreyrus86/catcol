@@ -31,13 +31,14 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $id = $row['id'];
     $title = $row['title'];
     $number = $row['number'];
+    $fileNumber = str_pad($number, 2, '0', STR_PAD_LEFT);
     $shortDescription = $row['short_description'] ?? '';
 
-    $imagePath = $assetsDir . $number . ".png";
+    $imagePath = $assetsDir . $fileNumber . ".png";
     if (file_exists($imagePath)) {
         // Создаем 100 копий изображения
-        for ($i = 1; $i <= 100; $i++) {
-            $newNumber = (($number - 1) * 100) + $i;
+        for ($i = 1; $i <= 1; $i++) {
+            $newNumber = (($number - 1) * 1) + $i - 1;
             $newFileName = "$newNumber.png";
             $newImagePath = $finalDir . $newFileName;
 
@@ -62,7 +63,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 "sellerFeeBasisPoints" => 1000,
                 "attributes" => [
                     ["trait_type" => "uuid", "value" => $id],
-                    ["trait_type" => "color", "value" => ""]
                 ]
             ];
 

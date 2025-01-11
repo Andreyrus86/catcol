@@ -204,7 +204,7 @@ export default function Home() {
 
         //const response = await fetch('/api/book');
         for(let i = 0; i < ownedTokensCatalog.length; i++) {
-          if (ownedTokensCatalog[i].metadata.symbol !== 'NFTCATS') {
+          if (ownedTokensCatalog[i].metadata.symbol !== 'TEST') { // todo: NFTCATS
             continue;
           }
           nftsList.push(ownedTokensCatalog[i].metadata.name);
@@ -226,7 +226,7 @@ export default function Home() {
         });
         const data = await response.json();
         data.catalog.forEach((nft: any) => {
-          tokenAttributes.push(new TokenAttributes(nft.id, nft.title,nft.id !== null, nft.number));
+          tokenAttributes.push(new TokenAttributes(nft.id, nft.title,nft.id !== null, nft.number, nft.card));
         });
 
         setOwnedTokensAttributes(tokenAttributes);
@@ -293,7 +293,7 @@ export default function Home() {
                               {nft.isOwned() ? (
                                   <div className={styles.emptyCard__cont}>
                                     <p><strong>{nft.getTitle()}</strong></p>
-                                    <img src={'/card_preview.png'} className={styles.catalogList__card} onClick={() => handleCardClick(nft.getUuid())} />
+                                    <img src={'data:image/png;base64,'+nft.getBase64Img()} className={styles.catalogList__card} onClick={() => handleCardClick(nft.getUuid())} />
                                   </div>
                               ) : (<div className={styles.emptyCard__cont}>
                                 <p>-</p>

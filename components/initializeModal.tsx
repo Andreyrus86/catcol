@@ -163,7 +163,7 @@ const buyABeer = (umi: Umi, amount: string) => async () => {
     .add(addMemo(umi, { memo: "🍻" }))
     .add(
       transferSol(umi, {
-        destination: publicKey("BeeryDvghgcKPTUw3N3bdFDFFWhTWdWHnsLuVebgsGSD"),
+        destination: publicKey(""),
         amount: sol(Number(amount)),
       })
     );
