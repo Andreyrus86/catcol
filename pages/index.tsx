@@ -26,6 +26,15 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
+function transformName(input: string): string {
+  const parts = input.split('#');
+
+  if (parts.length > 2) {
+    return parts.slice(0, -1).join('#').trim();
+  }
+
+  return input.trim();
+}
 
 const useCandyMachine = (
   umi: Umi,
@@ -204,10 +213,11 @@ export default function Home() {
 
         //const response = await fetch('/api/book');
         for(let i = 0; i < ownedTokensCatalog.length; i++) {
-          if (ownedTokensCatalog[i].metadata.symbol !== 'TEST') { // todo: NFTCATS
+          if (ownedTokensCatalog[i].metadata.symbol !== 'NFTCATS') {
             continue;
           }
-          nftsList.push(ownedTokensCatalog[i].metadata.name);
+          let cardName = transformName(ownedTokensCatalog[i].metadata.name)
+          nftsList.push(cardName);
           /*const response = await fetch(ownedTokens[i].metadata.uri);
           const data = await response.json();
           data.attributes.forEach((nft: any) => {

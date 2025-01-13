@@ -16,7 +16,7 @@ try {
 
 // Директории
 $assetsDir = "../media/assets/";
-$finalDir = "../media/assets_final/";
+$finalDir = "/home/andrei/projects/catcol/nft/assets/";
 
 // Создаем директорию для финальных файлов, если её нет
 if (!file_exists($finalDir)) {
@@ -34,12 +34,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $fileNumber = str_pad($number, 2, '0', STR_PAD_LEFT);
     $shortDescription = $row['short_description'] ?? '';
 
-    $imagePath = $assetsDir . $fileNumber . ".png";
+    $copiesNumber = 10;
+    $imagePath = $assetsDir . $fileNumber . ".jpg";
     if (file_exists($imagePath)) {
         // Создаем 100 копий изображения
-        for ($i = 1; $i <= 1; $i++) {
-            $newNumber = (($number - 1) * 1) + $i - 1;
-            $newFileName = "$newNumber.png";
+        for ($i = 1; $i <= $copiesNumber; $i++) {
+            $newNumber = (($number - 1) * $copiesNumber) + $i - 1;
+            $newFileName = "$newNumber.jpg";
             $newImagePath = $finalDir . $newFileName;
 
             // Копируем файл
@@ -50,12 +51,12 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $jsonFilePath = $finalDir . $jsonFileName;
 
             $jsonData = [
-                "name" => $title,
+                "name" => $title . ' #'.str_pad($i, 2, '0', STR_PAD_LEFT),
                 "symbol" => "NFTCATS",
                 "image" => $newFileName,
                 "properties" => [
                     "files" => [
-                        ["uri" => $newFileName, "type" => "image/png"]
+                        ["uri" => $newFileName, "type" => "image/jpeg"]
                     ],
                     "category" => "image"
                 ],
@@ -70,7 +71,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             file_put_contents($jsonFilePath, json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
     } else {
-        echo "Image {$number}.png not found.\n";
+        echo "Image {$number}.jpg not found.\n";
     }
 }
 
