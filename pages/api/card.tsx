@@ -1,9 +1,10 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import DbPool from "../../database/db";
 import fs from 'fs/promises';
 import fsExists from 'fs.promises.exists'
 import path from 'path';
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const dbPool = new DbPool();
     const resultPromise = await dbPool.getPool().query("" +
         "SELECT COUNT(*) as cnt FROM collectibles AS c " +

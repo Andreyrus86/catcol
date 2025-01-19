@@ -422,6 +422,8 @@ export default function Home() {
     );
   };
 
+  // @ts-ignore
+  // @ts-ignore
   return (
     <main>
       <Modal isOpen={isOpenModal} onClose={onCloseModal}>
@@ -440,10 +442,12 @@ export default function Home() {
                   </div>)
                 : (<div className={styles.photos}>
                     {
+                      // @ts-ignore
                       (<Image src={`data:image/png;base64,${cardInfo.card}`}/>)
                     }
                     {
                       (
+                          // @ts-ignore
                           cardInfo.images.map((imgObj, index) => (
                           <div key={`img-${index}`} className={styles.photos__item}>
                             <Image src={`data:image/jpeg;base64,${imgObj.base64}`}/>
@@ -451,10 +455,10 @@ export default function Home() {
                       )))
                     }
                     {
+                      // @ts-ignore
                       cardInfo.video != false ?
-                      (<video controls width="100%">
-                        <source src={`/api/video?id=${cardInfo.video}`} type="video/mp4"/>
-                      </video>)
+                      // @ts-ignore
+                      (<video controls width="100%"><source src={`/api/video?id=${cardInfo.video}`} type="video/mp4"/></video>)
                           : (<div></div>)
                     }
                   </div>)

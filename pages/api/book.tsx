@@ -1,6 +1,7 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import DbPool from "../../database/db";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const dbPool = new DbPool();
     const resultPromise = await dbPool.getPool().query("" +
         "SELECT c.number, c2.id, c2.title, c2.card_image FROM collectibles AS c " +

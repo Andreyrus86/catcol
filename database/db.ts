@@ -2,7 +2,8 @@ import {Pool} from 'pg';
 import dotenv from 'dotenv';
 
 export default class DbPool {
-    protected pool: Pool;
+    protected pool!: Pool;
+    private static _instance: any;
     constructor() {
         if (DbPool._instance) {
             return DbPool._instance;
