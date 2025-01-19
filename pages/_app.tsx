@@ -46,7 +46,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ChakraProvider>
-        <WalletProvider wallets={wallets}>
+        <WalletProvider wallets={wallets} autoConnect>
           <UmiProvider endpoint={endpoint}>
             <WalletModalProvider>
               <SolanaTimeProvider>
