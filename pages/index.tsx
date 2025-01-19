@@ -293,7 +293,7 @@ export default function Home() {
         <div className={styles.catalogList__title}>NFT cats</div>
         <div className={styles.catalogList__description}>
           On this page, you can view your collection of NFT cards. Connect your Solana wallet to access the catalog.
-          If you are not sure whether an NFT card is right for you, we would appreciate any regular <a href="https://buymeacoffee.com/nftcat" className={styles.catalogList__link} target="_blank">donation</a>. Iam sure that the future is totally related to blockchain and crypto technology, try it.
+          If you are not sure whether an NFT card is right for you, we would appreciate any regular <a rel="noreferrer"  href="https://buymeacoffee.com/nftcat" className={styles.catalogList__link} target="_blank">donation</a>. Iam sure that the future is totally related to blockchain and crypto technology, try it.
         </div>
         {isAllowed ? (
                   <section className={styles.catalogList}>
